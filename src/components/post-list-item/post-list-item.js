@@ -3,50 +3,29 @@ import "./post-list-item.sass"
 
 export default class PostListItem extends Component {
 
-    constructor (props) {
-        super(props)
-        this.state = {
-            important : false,
-            like:false
-        }
 
-       this.onImportant =  this.onImportant.bind(this)
-       this.onLike =  this.onLike.bind(this)
-    }
-
-    onImportant(){ // При кліці на зірочку функція змінює знач important
-        this.setState(({important}) => ({
-            important:!important   
-        }))
-    }
-    onLike(){ // При кліці на зірочку функція змінює знач like
-        this.setState(({like}) => ({
-            like:!like   
-        }))
-    }
     render(){
 
-        const {label,onDelete} = this.props;
-        const {important,like} = this.state
+        const {label,onDelete,onToggleImportant,onToggleLiked,like,important} = this.props
         let classNames = 'app-list-item d-flex justify-content-between'
-
-        if (important){
-            classNames += " important"
-        }
         if (like){
             classNames += " like"
         }
+        if (important){
+            classNames += " important"
+           
+        }
+        
         
         return (
-        <div className ={classNames}>
+        <div className = {classNames}>
              <span
-              className = "app-list-item-label"
-              onClick={this.onLike}>
+              className = "app-list-item-label"  onClick = {onToggleLiked}>
                     {label}
              </span>
              <div className = "d-flex justify-content-center align-items-center" >
                     <button type="button" className = "btn-star btn-sm"
-                    onClick= {this.onImportant}>
+                    onClick= {onToggleImportant}>
                         <i className = "fa fa-star"></i>
                     </button>
 

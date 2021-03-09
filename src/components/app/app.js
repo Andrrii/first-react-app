@@ -25,13 +25,17 @@ export default class App extends React.Component {
         // State на пряму не можна змінювати !!!!!!!!!!!!!!!!!!!!!!!
         this.state = {
              data : [
-                {id:1,label:"Going to learn React",important:true},
-                {id:2,label:"WOOOOW!",important:false},
-                {id:3,label:"I Love React",important:false}
+                {id:1,label:"Going to learn React",important:true,like:false},
+                {id:2,label:"WOOOOW!",important:false,like:false},
+                {id:3,label:"I Love React",important:false,like:false}
             ]
         }
         this.addItem = this.addItem.bind(this)
         this.deleteItem = this.deleteItem.bind(this)
+        this.onToggleLiked = this.onToggleLiked.bind(this)
+        this.onToggleImportant = this.onToggleImportant.bind(this)
+       
+
 
         this.maxId = 4
     }
@@ -63,10 +67,58 @@ export default class App extends React.Component {
         })
     }
    
+    onToggleLiked(id){
+        this.setState(({data}) => {
+            const index = data.findIndex(elem => elem.id === id)
+
+            const old = data[index]
+
+            const newItem = {...old,like: !old.like} // Перезаписуєм знач like
+
+            const before = data.slice(0,index) // copy massiv
+            const after  = data.slice(index+1)
+            
+            const newArray = [...before,newItem,...after] // створюєм новий мас.об'єктів
+
+            return {
+                data : newArray
+            }
+        })
+
+    }
+
+    onToggleImportant(id) {
+
+        this.setState(({data}) => {
+            const index = data.findIndex(elem => elem.id === id)
+
+            const old = data[index]
+
+            const newItemA = {...old,important: !old.important} // Перезаписуєм знач important
+
+            const before = data.slice(0,index) // copy massiv
+            const after  = data.slice(index+1)
+            
+            const newArray = [...before,newItemA,...after] // створюєм новий мас.об'єктів
+
+            return {
+                data : newArray
+            }
+        })
+    }
+
     render() {
+        const {data} = this.state
+    const countLiked = data.filter(item => item.like).length
+    const countAllPost = data.length
+
     return ( // Інший спосіб імпортувати стилі <div className = {style.app}> 
         <AppBlock> 
-            <AppHeader/>
+            <AppHeader
+            countAllPost = {countAllPost}
+            countLiked = {countLiked}
+            
+            />
             <div className="search-panel d-flex">
                     <SearchPanel/>
                     <PostStatusFilter/>
@@ -74,6 +126,8 @@ export default class App extends React.Component {
 
             <PostList posts = {this.state.data}
             onDelete={this.deleteItem}
+            onToggleImportant = {this.onToggleImportant}
+            onToggleLiked = {this.onToggleLiked}
             />
             <PostAddForm onAdd={this.addItem} />
         </AppBlock>
