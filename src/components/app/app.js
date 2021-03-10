@@ -28,13 +28,16 @@ export default class App extends React.Component {
                 {id:1,label:"Going to learn React",important:true,like:false},
                 {id:2,label:"WOOOOW!",important:false,like:false},
                 {id:3,label:"I Love React",important:false,like:false}
-            ]
+            ],
+            term:'',
+            filter : 'all'
         }
         this.addItem = this.addItem.bind(this)
         this.deleteItem = this.deleteItem.bind(this)
         this.onToggleLiked = this.onToggleLiked.bind(this)
         this.onToggleImportant = this.onToggleImportant.bind(this)
-       
+        this.onUpdateSearch = this.onUpdateSearch.bind(this)
+        this.onFilterSelect = this.onFilterSelect.bind(this)
 
 
         this.maxId = 4
@@ -107,10 +110,37 @@ export default class App extends React.Component {
         })
     }
 
+    searchPost(items,term) {
+        if(term.length === 0)
+            {return items}
+        
+        return items.filter( (item) => {
+            return item.label.indexOf(term) > -1
+        })    
+    }
+
+    onUpdateSearch(term){
+        this.setState({term})
+    }
+
+    filterPosts(items,filter){
+        if(filter === "like"){
+            return items.filter(item => item.like)
+        }
+        else{
+            return items
+        }
+    }
+
+    onFilterSelect(filter) {
+        this.setState({filter})
+    }
     render() {
-        const {data} = this.state
+        const {data,term,filter} = this.state
     const countLiked = data.filter(item => item.like).length
     const countAllPost = data.length
+
+    const visiblePosts = this.filterPosts(this.searchPost(data,term),filter)
 
     return ( // Інший спосіб імпортувати стилі <div className = {style.app}> 
         <AppBlock> 
@@ -120,11 +150,16 @@ export default class App extends React.Component {
             
             />
             <div className="search-panel d-flex">
-                    <SearchPanel/>
-                    <PostStatusFilter/>
+                    <SearchPanel
+                    onUpdateSearch = {this.onUpdateSearch}
+                    />
+                    <PostStatusFilter
+                        filter = {filter}
+                        onFilterSelect = {this.onFilterSelect}
+                    />
             </div>
 
-            <PostList posts = {this.state.data}
+            <PostList posts = {visiblePosts}
             onDelete={this.deleteItem}
             onToggleImportant = {this.onToggleImportant}
             onToggleLiked = {this.onToggleLiked}
